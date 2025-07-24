@@ -1,0 +1,47 @@
+Til: Glen.Krossoy@gmail.com
+Emne: Random Winner App - Apex Sport & Trading Cards
+
+Hei Glen!
+
+Her er Random Winner App som er utviklet for Apex Sport & Trading Cards. 
+
+🎯 INSTRUKSJONER:
+1. Last ned vedlagte "index.html" fil
+2. Dobbeltklikk på filen for å åpne i nettleser
+3. Eller åpne filen direkte i Chrome/Safari/Firefox
+
+📱 FOR MOBILTESTING:
+- Send filen til din mobil via e-post
+- Åpne på mobil og legg til som bokmerke
+- Fungerer offline etter første åpning
+
+✨ FUNKSJONER:
+✅ Lag og administrer lister med deltakere
+✅ Trekk tilfeldige vinnere med casino-animasjon
+✅ Data lagres automatisk i nettleser
+✅ Responsivt design for mobil og desktop
+✅ Apex Sport & Trading Cards branding
+✅ 2-sekunders spinning-effekt ved vinnertrening
+
+🛠 TEKNISKE DETALJER:
+- Bygget med React.js og Tailwind CSS
+- Komplett standalone HTML-fil (16KB)
+- Krever moderne nettleser
+- Ingen server eller installasjon nødvendig
+
+📖 BRUKERVEILEDNING:
+1. Lag ny liste med "Lag Ny Liste"
+2. Legg til deltakere med "Legg til Deltaker"
+3. Trekk vinner med "🎲 Trekk Vinner!"
+4. Bytt mellom lister i dropdown-menyen
+
+Appen er utviklet i henhold til den detaljerte PRD-en og inkluderer alle ønskede funksjoner og design-elementer.
+
+Test gjerne og gi tilbakemelding!
+
+Mvh,
+[Ditt navn]
+
+---
+© 2024 Apex Sport & Trading Cards
+Random Winner App v1.0
