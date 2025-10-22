@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Winner App - Apex Sport & Trading Cards</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+            min-height: 100vh;
+        }
+        
+        .glow-effect {
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        }
+        
+        .winner-glow {
+            animation: winner-pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes winner-pulse {
+            0%, 100% { 
+                transform: scale(1);
+                text-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
+            }
+            50% { 
+                transform: scale(1.05);
+                text-shadow: 0 0 30px rgba(212, 175, 55, 1);
+            }
+        }
+        
+        .spinning {
+            animation: spin 0.5s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .card-flip {
+            animation: flip 0.3s ease-in-out;
+        }
+        
+        @keyframes flip {
+            0% { transform: rotateY(0deg); }
+            50% { transform: rotateY(90deg); }
+            100% { transform: rotateY(0deg); }
+        }
+        
+        .casino-button {
+            background: linear-gradient(45deg, #39FF14, #2dd40d);
+            transition: all 0.3s ease;
+        }
+        
+        .casino-button:hover {
+            background: linear-gradient(45deg, #2dd40d, #39FF14);
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .gold-gradient {
+            background: linear-gradient(45deg, #D4AF37, #FFD700);
+        }
+        
+        .container-glow {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid rgba(57, 255, 20, 0.2);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(57, 255, 20, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function RandomWinnerApp() {
+            const [lists, setLists] = useState({});
+            const [selectedList, setSelectedList] = useState('');
+            const [newListName, setNewListName] = useState('');
+            const [newItem, setNewItem] = useState('');
+            const [winner, setWinner] = useState('');
+            const [isSpinning, setIsSpinning] = useState(false);
+            const [showWinner, setShowWinner] = useState(false);
+
+            // Apex Sport & Trading Cards logo as base64 (placeholder - replace with actual logo)
+            const apexLogo = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTUwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMTUwIDYwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iMTUwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iIzAwMDAwMCIgc3Ryb2tlPSIjMzlGRjE0IiBzdHJva2Utd2lkdGg9IjIiLz4KPHRleHQgeD0iNzUiIHk9IjIwIiBmb250LWZhbWlseT0iTW9udHNlcnJhdCIgZm9udC1zaXplPSIxNCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IiMzOUZGMTQiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkFQRVg8L3RleHQ+Cjx0ZXh0IHg9Ijc1IiB5PSIzNSIgZm9udC1mYW1pbHk9Ik1vbnRzZXJyYXQiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiNGRkZGRkYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPlNQT1JUICYgVFJBRElORzwvdGV4dD4KPHRleHQgeD0iNzUiIHk9IjQ4IiBmb250LWZhbWlseT0iTW9udHNlcnJhdCIgZm9udC1zaXplPSIxMCIgZmlsbD0iI0ZGRkZGRiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q0FSRFMgJiBNT1JFPC90ZXh0Pgo8L3N2Zz4K";
+
+            // Load data from localStorage on component mount
+            useEffect(() => {
+                const savedLists = localStorage.getItem('randomWinnerLists');
+                if (savedLists) {
+                    const parsedLists = JSON.parse(savedLists);
+                    setLists(parsedLists);
+                    const listNames = Object.keys(parsedLists);
+                    if (listNames.length > 0) {
+                        setSelectedList(listNames[0]);
+                    }
+                }
+            }, []);
+
+            // Save to localStorage whenever lists change
+            useEffect(() => {
+                localStorage.setItem('randomWinnerLists', JSON.stringify(lists));
+            }, [lists]);
+
+            const createNewList = () => {
+                if (newListName.trim() && !lists[newListName.trim()]) {
+                    const updatedLists = { ...lists, [newListName.trim()]: [] };
+                    setLists(updatedLists);
+                    setSelectedList(newListName.trim());
+                    setNewListName('');
+                }
+            };
+
+            const addItem = () => {
+                if (newItem.trim() && selectedList) {
+                    const updatedLists = { ...lists };
+                    updatedLists[selectedList] = [...updatedLists[selectedList], newItem.trim()];
+                    setLists(updatedLists);
+                    setNewItem('');
+                }
+            };
+
+            const removeItem = (index) => {
+                if (selectedList) {
+                    const updatedLists = { ...lists };
+                    updatedLists[selectedList] = updatedLists[selectedList].filter((_, i) => i !== index);
+                    setLists(updatedLists);
+                }
+            };
+
+            const drawWinner = () => {
+                if (selectedList && lists[selectedList] && lists[selectedList].length > 0) {
+                    setIsSpinning(true);
+                    setShowWinner(false);
+                    setWinner('');
+
+                    // 2-second spinning animation
+                    setTimeout(() => {
+                        const randomIndex = Math.floor(Math.random() * lists[selectedList].length);
+                        const selectedWinner = lists[selectedList][randomIndex];
+                        setWinner(selectedWinner);
+                        setIsSpinning(false);
+                        setShowWinner(true);
+                    }, 2000);
+                }
+            };
+
+            const getCurrentList = () => {
+                return selectedList && lists[selectedList] ? lists[selectedList] : [];
+            };
+
+            return (
+                <div className="min-h-screen flex flex-col items-center py-8 px-4">
+                    {/* Apex Logo */}
+                    <div className="mb-8">
+                        <img 
+                            src={apexLogo} 
+                            alt="Apex Sport & Trading Cards" 
+                            className="h-16 w-auto glow-effect rounded-lg"
+                        />
+                    </div>
+
+                    {/* Main Container */}
+                    <div className="w-full max-w-md container-glow rounded-xl p-8 space-y-6">
+                        {/* Header */}
+                        <h1 className="text-3xl font-bold text-center glow-text">
+                            Random Winner App
+                        </h1>
+
+                        {/* Create New List Section */}
+                        <div className="space-y-3">
+                            <h2 className="text-xl font-semibold text-green-400">Lag Ny Liste</h2>
+                            <div className="flex space-x-2">
+                                <input
+                                    type="text"
+                                    value={newListName}
+                                    onChange={(e) => setNewListName(e.target.value)}
+                                    placeholder="Navn på liste..."
+                                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-400"
+                                    onKeyPress={(e) => e.key === 'Enter' && createNewList()}
+                                />
+                                <button
+                                    onClick={createNewList}
+                                    disabled={!newListName.trim()}
+                                    className="casino-button px-4 py-2 text-black font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Lag Liste
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Select List Section */}
+                        {Object.keys(lists).length > 0 && (
+                            <div className="space-y-3">
+                                <h2 className="text-xl font-semibold text-green-400">Velg Liste</h2>
+                                <select
+                                    value={selectedList}
+                                    onChange={(e) => setSelectedList(e.target.value)}
+                                    className="w-full px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-green-400"
+                                >
+                                    {Object.keys(lists).map(listName => (
+                                        <option key={listName} value={listName}>
+                                            {listName} ({lists[listName].length} deltakere)
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* Add Items Section */}
+                        {selectedList && (
+                            <div className="space-y-3">
+                                <h2 className="text-xl font-semibold text-green-400">Legg til Deltaker</h2>
+                                <div className="flex space-x-2">
+                                    <input
+                                        type="text"
+                                        value={newItem}
+                                        onChange={(e) => setNewItem(e.target.value)}
+                                        placeholder="Navn på deltaker..."
+                                        className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-green-400"
+                                        onKeyPress={(e) => e.key === 'Enter' && addItem()}
+                                    />
+                                    <button
+                                        onClick={addItem}
+                                        disabled={!newItem.trim()}
+                                        className="casino-button px-4 py-2 text-black font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        Legg til
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Current List Display */}
+                        {selectedList && getCurrentList().length > 0 && (
+                            <div className="space-y-3">
+                                <h2 className="text-xl font-semibold text-green-400">
+                                    Deltakere i "{selectedList}" ({getCurrentList().length})
+                                </h2>
+                                <div className="max-h-40 overflow-y-auto space-y-2 bg-gray-900 rounded-lg p-3">
+                                    {getCurrentList().map((item, index) => (
+                                        <div key={index} className="flex justify-between items-center bg-gray-800 rounded px-3 py-2 card-flip">
+                                            <span className="text-sm">{item}</span>
+                                            <button
+                                                onClick={() => removeItem(index)}
+                                                className="text-red-400 hover:text-red-300 text-sm font-semibold"
+                                            >
+                                                Slett
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Draw Winner Section */}
+                        {selectedList && getCurrentList().length > 0 && (
+                            <div className="space-y-4 text-center">
+                                <button
+                                    onClick={drawWinner}
+                                    disabled={isSpinning}
+                                    className={`w-full py-4 text-xl font-bold rounded-lg transition-all duration-300 ${
+                                        isSpinning 
+                                            ? 'bg-gray-600 cursor-not-allowed' 
+                                            : 'casino-button text-black hover:scale-105'
+                                    } ${isSpinning ? 'spinning' : ''}`}
+                                >
+                                    {isSpinning ? '🎰 Trekker vinner...' : '🎲 Trekk Vinner!'}
+                                </button>
+
+                                {/* Winner Display */}
+                                {showWinner && winner && (
+                                    <div className="space-y-3 p-6 gold-gradient rounded-xl">
+                                        <h3 className="text-2xl font-bold text-black">🏆 VINNER! 🏆</h3>
+                                        <p className="text-3xl font-bold text-black winner-glow">
+                                            {winner}
+                                        </p>
+                                        <div className="text-lg text-black">
+                                            Gratulerer! 🎉
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Instructions */}
+                        {Object.keys(lists).length === 0 && (
+                            <div className="text-center space-y-3 text-gray-400">
+                                <div className="text-6xl">🎰</div>
+                                <p className="text-lg">Velkommen til Random Winner App!</p>
+                                <p>Start med å lage en ny liste med deltakere.</p>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-8 text-center text-gray-500 text-sm">
+                        <p>© 2024 Apex Sport & Trading Cards</p>
+                        <p>Random Winner App - Lag lister og trekk vinnere!</p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<RandomWinnerApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
